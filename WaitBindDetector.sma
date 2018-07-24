@@ -2,18 +2,28 @@
 #include <fakemeta>
 #include <hamsandwich>
 
-#define PLUGIN_NAME			"WaitBindDetector"
-#define PLUGIN_VERSION			"1.0.0"
-#define PLUGIN_AUTHOR			"Reavap"
+#define PLUGIN_NAME "WaitBindDetector"
+#define PLUGIN_VERSION "1.0.0"
+#define PLUGIN_AUTHOR "Reavap"
 
-#define MAX_PLAYERS			32 + 1
+#if !defined client_disconnected
+	#define client_disconnected client_disconnect
+#endif
 
-#define PLUGIN_ACCESS_LEVEL		ADMIN_KICK
-#define CONSECUTIVE_WARNING_COUNT	50
+#if !defined MAX_PLAYERS
+	#define MAX_PLAYERS 32
+#endif
 
-#pragma semicolon			1
+#if !defined PLATFORM_MAX_PATH
+	#define PLATFORM_MAX_PATH 256
+#endif
 
-new g_sLogFile[128];
+#define PLUGIN_ACCESS_LEVEL ADMIN_KICK
+#define CONSECUTIVE_WARNING_COUNT 50
+
+#pragma semicolon 1
+
+new g_sLogFile[PLATFORM_MAX_PATH];
 new const g_sAdminNotificationSpk[] = "spk ^"buttons/blip2^"";
 
 new wbd_punishment;
@@ -43,14 +53,14 @@ new const g_sCommandStrings[g_iTypes][] =
 	"duck wait duck"
 };
 
-new bool:g_bAlive[MAX_PLAYERS];
+new bool:g_bAlive[MAX_PLAYERS + 1];
 
-new g_iPreviousOldButtons[MAX_PLAYERS];
-new g_iOldButtons[MAX_PLAYERS];
-new g_iButtons[MAX_PLAYERS];
+new g_iPreviousOldButtons[MAX_PLAYERS + 1];
+new g_iOldButtons[MAX_PLAYERS + 1];
+new g_iButtons[MAX_PLAYERS + 1];
 
-new bool:g_bPrevCommandLastedOneFrame[MAX_PLAYERS][g_iTypes];
-new g_iConsecutiveDelayedButtons[MAX_PLAYERS][g_iTypes];
+new bool:g_bPrevCommandLastedOneFrame[MAX_PLAYERS + 1][g_iTypes];
+new g_iConsecutiveDelayedButtons[MAX_PLAYERS + 1][g_iTypes];
 
 public plugin_init()
 {
@@ -68,7 +78,7 @@ public plugin_init()
 	formatex(g_sLogFile[iLen], (charsmax(g_sLogFile) - iLen), "/waitbinds.log");
 }
 
-public client_disconnect(id)
+public client_disconnected(id)
 {
 	g_bAlive[id] = false;
 	
@@ -175,7 +185,7 @@ handleViolation(const id, const iTypeIndex)
 	get_user_name(id, szPlayerName, charsmax(szPlayerName));
 	formatex(szAdminMessage, charsmax(szAdminMessage), "[WBD] Detected usage of %s on player %s", g_sCommandStrings[iTypeIndex], szPlayerName);
 	
-	static aPlayers[MAX_PLAYERS - 1], iPlayerCount;
+	static aPlayers[MAX_PLAYERS], iPlayerCount;
 	get_players(aPlayers, iPlayerCount, "ch");
 	
 	for (new i = 0; i < iPlayerCount; i++)
