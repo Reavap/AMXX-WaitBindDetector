@@ -2,9 +2,8 @@
 AMX Mod X plugin that detects clients using binds with "+jump; wait; -jump" or "+duck; wait; -duck".
 These binds mainly gives an advantage in movement based mods.
 
-## Requirements / Dependencies ##
+## Requirements ##
 * AMXX 1.8.2 or 1.8.3
-* Fakemeta & Hamsandwich AMXX modules
 
 ## Functionality ##
 * Notification to admins when a player is detected (default access level *ADMIN_KICK*)
